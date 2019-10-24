@@ -1,5 +1,5 @@
-AWSTemplateFormatVersion: "2019-09-01"
-Description: Network VPC, Subnets + RouteTables, Internet + NAT Gateways
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Network VPC, Subnets + RouteTables, Internet + NAT Gateways"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -20,10 +20,7 @@ Metadata:
             - PublicSubnetA
             - PublicSubnetB
             - PublicSubnetC
-            - RedisSubnet
             - MongoSubnet
-            - RDSSubnetA
-            - RDSSubnetB
             - NATSubnet
 
 Parameters:
@@ -65,25 +62,10 @@ Parameters:
     Default: '10.30.0.0/24'
     Description: "Public Subnet C"
 
-  RedisSubnet:
-    Type: String
-    Default: '10.30.251.0/24'
-    Description: "Redis Subnet"
-
   MongoSubnet:
     Type: String
     Default: '10.30.250.0/24'
     Description: "Mongo Subnet"
-
-  RDSSubnetA:
-    Type: String
-    Default: '10.30.252.0/24'
-    Description: "RDS Subnet"
-
-  RDSSubnetB:
-    Type: String
-    Default: '10.30.253.0/24'
-    Description: "RDS Subnet B"
 
   NATSubnet:
     Type: String
@@ -200,24 +182,6 @@ Resources:
 
 
 
-  #======================= Redis RouteTables =========================
-  RouteTableForRedis:
-    Type: "AWS::EC2::RouteTable"
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Join [ " ", [ !Ref Environment, "Redis RT" ] ]
-
-  #=========== Associate Redis Route for Redis Subnet =================
-  RouteAssociationRedis:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
-    Properties:
-      RouteTableId: !Ref RouteTableForRedis
-      SubnetId: !Ref RedisSubnet
-
-
-
   #======================= Mongo RouteTables =========================
   RouteTableForMongo:
     Type: "AWS::EC2::RouteTable"
@@ -235,28 +199,6 @@ Resources:
       SubnetId: !Ref MongoSubnet
 
 
-
-  #======================= RDS RouteTables =========================
-  RouteTableForRDS:
-    Type: "AWS::EC2::RouteTable"
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Join [ " ", [ !Ref Environment, "Public RT" ] ]
-
-  #=========== Associate RDS Route for RDS Subnets =================
-  RouteAssociationRDSSubnetA:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
-    Properties:
-      RouteTableId: !Ref RouteTableForRDS
-      SubnetId: !Ref RDSSubnetA
-
-  RouteAssociationRDSSubnetB:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
-    Properties:
-      RouteTableId: !Ref RouteTableForRDS
-      SubnetId: !Ref RDSSubnetB
 
 
 
@@ -281,7 +223,7 @@ Resources:
 
   #============== ElasticIP for NAT Gateway =======================
   EIP:
-    Type: "AWS::EC2:EIP"
+    Type: "AWS::EC2::EIP"
     DependsOn: GatewayAttachmentInternet
     Properties:
       Domain: !Ref VPC
@@ -302,10 +244,10 @@ Resources:
 
 
   #============================================ All Subnets ===================================================
-  PrivateSubnet_A:
+  PrivateSubnetALLA:
     Type: "AWS::EC2::Subnet"
     Properties:
-      VpcId: VPC
+      VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
       CidrBlock: !Ref "PrivateSubnetA"
       MapPublicIpOnLaunch: false
@@ -313,10 +255,10 @@ Resources:
         - Key: Name
           Value: !Join [ "", [ !Ref Environment, "Private Subnet A" ] ]
 
-  PrivateSubnet_B:
+  PrivateSubnetALLB:
     Type: "AWS::EC2::Subnet"
     Properties:
-      VpcId: VPC
+      VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
       CidrBlock: !Ref "PrivateSubnetB"
       MapPublicIpOnLaunch: false
@@ -324,10 +266,10 @@ Resources:
         - Key: Name
           Value: !Join [ "", [ !Ref Environment, "Private Subnet B" ] ]
 
-  PrivateSubnet_C:
+  PrivateSubnetALLC:
     Type: "AWS::EC2::Subnet"
     Properties:
-      VpcId: VPC
+      VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
       CidrBlock: !Ref "PrivateSubnetC"
       MapPublicIpOnLaunch: false
@@ -335,10 +277,10 @@ Resources:
         - Key: Name
           Value: !Join [ "", [ !Ref Environment, "Private Subnet C" ] ]
 
-  PublicSubnet_A:
+  PublicSubnetALLA:
     Type: "AWS::EC2::Subnet"
     Properties:
-      VpcId: VPC
+      VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
       CidrBlock: !Ref "PublicSubnetA"
       MapPublicIpOnLaunch: false
@@ -346,10 +288,10 @@ Resources:
         - Key: Name
           Value: !Join [ "", [ !Ref Environment, "Public Subnet A" ] ]
 
-  PublicSubnet_B:
+  PublicSubnetALLB:
     Type: "AWS::EC2::Subnet"
     Properties:
-      VpcId: VPC
+      VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
       CidrBlock: !Ref "PublicSubnetB"
       MapPublicIpOnLaunch: false
@@ -357,10 +299,10 @@ Resources:
         - Key: Name
           Value: !Join [ "", [ !Ref Environment, "Public Subnet B" ] ]
 
-  PublicSubnet_C:
+  PublicSubnetALLC:
     Type: "AWS::EC2::Subnet"
     Properties:
-      VpcId: VPC
+      VpcId: !Ref VPC
       AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
       CidrBlock: !Ref "PublicSubnetC"
       MapPublicIpOnLaunch: false
@@ -368,18 +310,7 @@ Resources:
         - Key: Name
           Value: !Join [ "", [ !Ref Environment, "Public Subnet C" ] ]
 
-  Redis_Subnet:
-    Type: "AWS::EC2::Subnet"
-    Properties:
-      VpcId: VPC
-      AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
-      CidrBlock: !Ref "RedisSubnet"
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Join [ "", [ !Ref Environment, "Redis Subnet" ] ]
-
-  Mongo_Subnet:
+  MongoALLSubnet:
     Type: "AWS::EC2::Subnet"
     Properties:
       VpcId: VPC
@@ -390,29 +321,7 @@ Resources:
         - Key: Name
           Value: !Join [ "", [ !Ref Environment, "Mongo Subnet" ] ]
 
-  RDSSubnet_A:
-    Type: "AWS::EC2::Subnet"
-    Properties:
-      VpcId: VPC
-      AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
-      CidrBlock: !Ref "RDSSubnetA"
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Join [ "", [ !Ref Environment, "RDS Subnet A" ] ]
-
-  RDSSubnet_B:
-    Type: "AWS::EC2::Subnet"
-    Properties:
-      VpcId: VPC
-      AvailabilityZone: !Select [ 0, "Fn::GetAZs": { Ref: "AWS::Region" } ]
-      CidrBlock: !Ref "RDSSubnetB"
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: !Join [ "", [ !Ref Environment, "RDS Subnet B" ] ]
-
-  NAT_Subnet:
+  NATALLSubnet:
     Type: "AWS::EC2::Subnet"
     Properties:
       VpcId: VPC
@@ -474,29 +383,11 @@ Outputs:
     Export:
       Name: !Join [ "-", [ !Ref "Environment", "PublicSubnetC" ] ]
 
-  Redis:
-    Description: ID for Redis Subnet
-    Value: !Ref RedisSubnet
-    Export:
-      Name: !Join [ "-", [ !Ref "Environment", "RedisSubnet" ] ]
-
   Mongo:
     Description: ID for Mongo Subnet
     Value: !Ref MongoSubnet
     Export:
       Name: !Join [ "-", [ !Ref "Environment", "MongoSubnet" ] ]
-
-  RDS-A:
-    Description: ID for RDS Subnet A
-    Value: !Ref RDSSubnetA
-    Export:
-      Name: !Join [ "-", [ !Ref "Environment", "RDSSubnetA" ] ]
-
-  RDS-B:
-    Description: ID for RDS Subnet B
-    Value: !Ref RDSSubnetB
-    Export:
-      Name: !Join [ "-", [ !Ref "Environment", "RDSSubnetB" ] ]
 
   NAT:
     Description: ID for NAT Subnet
