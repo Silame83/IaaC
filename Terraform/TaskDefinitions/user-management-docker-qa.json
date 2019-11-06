@@ -1,0 +1,140 @@
+[
+  {
+    "name": "user-management-docker-qa",
+    "image": "639716861848.dkr.ecr.eu-west-1.amazonaws.com/user-management:commitid-3f2cc07",
+    "cpu": 128,
+    "memory": 1024,
+    "essential": true,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/ecs/user-management-docker-qa",
+        "awslogs-region": "eu-west-3",
+        "awslogs-create-group": "true"
+      }
+    },
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 0,
+        "protocol": "tcp"
+      }
+    ],
+    "command": [
+      "node",
+      "app.js"
+    ],
+    "environment": [
+      {
+        "name": "ADMIN_EMAIL",
+        "value": "eyal@colu.com"
+      },
+      {
+        "name": "APPLICATION_NAME",
+        "value": "USERMANAGEMENT"
+      },
+      {
+        "name": "DB_OPTIONS",
+        "value": "{replset:{socketOptions:{connectTimeoutMS:4000}}}"
+      },
+      {
+        "name": "DBCOLLECTION",
+        "value": "engine_mn_qa"
+      },
+      {
+        "name": "DBURI",
+        "value": "5424d1bb30e8148d447bdfa7014d89ab0d4e45893@qa-rs-shard-00-00-bx3yy.mongodb.net:27017,engine_dev:20e52e53c62c89773554724b4f82f606b6f93f3c5104a839c6385992286ff277feb8b117b64cc1aea2fa2d95424d1bb30e8148d447bdfa7014d89ab0d4e45893@qa-rs-shard-00-01-bx3yy.mongodb.net:27017,engine_dev:20e52e53c62c89773554724b4f82f606b6f93f3c5104a839c6385992286ff277feb8b117b64cc1aea2fa2d95424d1bb30e8148d447bdfa7014d89ab0d4e45893@qa-rs-shard-00-02-bx3yy.mongodb.net:27017/colu_dev_new?ssl=true&replicaSet=QA-RS-shard-0&authSource=admin"
+      },
+      {
+        "name": "DEMO_LIST",
+        "value": "+12025555555"
+      },
+      {
+        "name": "DEMO_LIST_MODE",
+        "value": "false"
+      },
+      {
+        "name": "DEMO_PREFIX",
+        "value": "+97255555"
+      },
+      {
+        "name": "DEMO_PREFIX_MODE",
+        "value": "true"
+      },
+      {
+        "name": "ENV",
+        "value": "QA"
+      },
+      {
+        "name": "HTTP_PORT",
+        "value": "8080"
+      },
+      {
+        "name": "IP_BLACKLIST",
+        "value": "false"
+      },
+      {
+        "name": "JWTTOKENSECRET",
+        "value": "eece15a9923b5ad41c9bb861d18f815f077bc999a8cf26c9c459adfd66c6a283c98d81c96fdd868c7a76629c633e082da5a271f1af4b393e8220c2f71548298e"
+      },
+      {
+        "name": "LOGIN_LIMIT_ALLOWED",
+        "value": "500"
+      },
+      {
+        "name": "LOGIN_LIMIT_MINUTES",
+        "value": "10"
+      },
+      {
+        "name": "MOLECULER_BROKER",
+        "value": "{\"type\":\"MQTT\",\"options\":{\"servers\":[{\"host\":\"b-be5119ac-f7f0-4d09-be3b-5373e259ebc1-1.mq.eu-west-1.amazonaws.com\",\"protocol\":\"mqtts\",\"port\":8883},{\"host\":\"b-be5119ac-f7f0-4d09-be3b-5373e259ebc1-2.mq.eu-west-1.amazonaws.com\",\"protocol\":\"mqtts\",\"port\":8883}],\"username\":\"qa-user\",\"password\":\"Broker4Colu!\"}}"
+      },
+      {
+        "name": "NEW_RELIC_APP_NAME",
+        "value": "user-management-mn-qa-euw1"
+      },
+      {
+        "name": "NODE_ENV",
+        "value": "development"
+      },
+      {
+        "name": "NOTIFY_ADMIN",
+        "value": "true"
+      },
+      {
+        "name": "SMS_PROVIDER",
+        "value": "sns"
+      },
+      {
+        "name": "USE_MOLECULER",
+        "value": "true"
+      },
+      {
+        "name": "USE_MQ",
+        "value": "false"
+      },
+      {
+        "name": "XRAY_APP_NAME",
+        "value": "UserManagementQaMn"
+      },
+      {
+        "name": "XRAY_SAMPLE",
+        "value": "true"
+      }
+    ],
+    "healthCheck": {
+      "retries": 3,
+      "command": [
+        "CMD-SHELL",
+        "curl -f http://localhost:8080/brokertest || exit 1"
+      ],
+      "timeout": 15,
+      "interval": 30,
+      "startPeriod": 30
+    },
+    "dockerLabels": {
+      "app-name": "user-management"
+    },
+    "name": "user-management"
+  }
+]

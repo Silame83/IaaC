@@ -1,0 +1,80 @@
+[
+  {
+    "name": "community-docker-qa",
+    "image": "639716861848.dkr.ecr.eu-west-1.amazonaws.com/community:commitid-ce1cc9b",
+    "cpu": 512,
+    "memory": 1024,
+    "essential": true,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/ecs/community-docker-qa",
+        "awslogs-region": "eu-west-3",
+        "awslogs-create-group": "true"
+      }
+    },
+    "portMappings": [
+      {
+        "containerPort": 8888,
+        "hostPort": 0,
+        "protocol": "tcp"
+      }
+    ],
+    "command": [
+      "npm",
+      "start"
+    ],
+    "environment": [
+      {
+        "name": "ALLOW_ADMIN_PANEL",
+        "value": "true"
+      },
+      {
+        "name": "APPLICATION_NAME",
+        "value": "Community"
+      },
+      {
+        "name": "CCS_USE_MQ",
+        "value": "true"
+      },
+      {
+        "name": "CFG_USE_MQ",
+        "value": "true"
+      },
+      {
+        "name": "ENV",
+        "value": "QA"
+      },
+      {
+        "name": "ENV_PROPERTIES",
+        "value": "QA"
+      },
+      {
+        "name": "LOAD_MQ",
+        "value": "true"
+      },
+      {
+        "name": "MOLECULER_LOAD",
+        "value": "true"
+      },
+      {
+        "name": "USE_MQ",
+        "value": "true"
+      }
+    ],
+    "healthCheck": {
+      "retries": 10,
+      "command": [
+        "CMD-SHELL",
+        "curl -f http://localhost:8888/is_running || exit 1"
+      ],
+      "timeout": 10,
+      "interval": 10,
+      "startPeriod": 0
+    },
+    "dockerLabels": {
+      "app-name": "community"
+    },
+    "name": "community"
+  }
+]
